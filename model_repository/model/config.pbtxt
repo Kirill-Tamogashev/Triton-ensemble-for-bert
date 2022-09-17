@@ -1,0 +1,36 @@
+name: "model"
+platform: "onnxruntime_onnx"
+backend: "onnxruntime"
+default_model_filename: "rubert-base-cased.onnx"
+max_batch_size: 0
+input [
+  {
+    name: "input_ids"
+    data_type: TYPE_INT64
+    dims: [ -1, -1 ]
+  },
+{
+    name: "attention_mask"
+    data_type: TYPE_INT64
+    dims: [ -1, -1 ]
+  },
+  {
+    name: "token_type_ids"
+    data_type: TYPE_INT64
+    dims: [ -1, -1 ]
+  }
+]
+output [
+  {
+    name: "output_0"
+    data_type: TYPE_FP32
+    dims: [ -1, -1, 768 ]
+  }
+]
+
+instance_group [
+    {
+      count: 1
+      kind: KIND_GPU
+    }
+]

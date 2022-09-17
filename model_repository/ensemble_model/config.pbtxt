@@ -1,0 +1,72 @@
+name: "ensemble_model"
+# maximum batch size 
+max_batch_size: 0 
+platform: "ensemble"
+
+#input to the model 
+input [
+{
+    name: "TEXT"
+    data_type: TYPE_STRING
+    dims: [ -1 ] 
+    # -1 means dynamic axis, aka this dimension may change 
+}
+]
+
+#output of the model 
+output {
+    name: "output_0"
+    data_type: TYPE_FP32
+    dims: [-1, -1, 768] 
+    # two dimensional tensor, where 1st dimension: batch-size, 2nd dimension: #classes
+}
+
+#Type of scheduler to be used
+ensemble_scheduling {
+    step [
+        {
+            model_name: "tokenizer"
+            model_version: -1
+            input_map {
+    	        key: "TEXT"
+       		value: "TEXT"
+        }
+        output_map [
+        {
+            key: "input_ids"
+            value: "input_ids"
+        },
+        {
+            key: "attention_mask"
+            value: "attention_mask"
+        },
+        {
+            key: "token_type_ids"      
+            value: "token_type_ids" 
+        }
+        ]
+        },
+        {
+            model_name: "model"
+            model_version: -1
+        input_map [
+            {
+                key: "input_ids"
+                value: "input_ids"
+            },
+            {
+                key: "attention_mask"
+                value: "attention_mask"
+            },
+            {
+                key: "token_type_ids"
+                value: "token_type_ids"
+            }
+        ]
+        output_map {
+                key: "output_0"
+                value: "output_0"
+            }
+        }
+    ]
+}
